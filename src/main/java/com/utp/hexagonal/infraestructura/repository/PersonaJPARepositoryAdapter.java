@@ -28,6 +28,7 @@ public class PersonaJPARepositoryAdapter implements PersonaSalida {
     @Override
     public Optional<Persona> actualizarPersona (Long id, Persona persona) {
         if (personaJPARepository.existsById(id)){
+            persona.setId(id);
             PersonaEntity personaEntity = PersonaEntity.delModeloDominio (persona);
             return Optional.of(personaJPARepository.save (personaEntity).alModeloDominio());
         }
