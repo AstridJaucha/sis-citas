@@ -1,5 +1,27 @@
 package com.utp.hexagonal.infraestructura.config;
 
+import com.utp.hexagonal.aplicacion.casodeuso.PacienteServiceImpl;
+import com.utp.hexagonal.dominio.puertos.entrada.PacienteEntrada;
+import com.utp.hexagonal.dominio.puertos.salida.PacienteSalida;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ApplicationConfig {
+
+    @Bean
+    public PacienteEntrada pacienteEntrada(PacienteSalida salida) {
+        return new PacienteServiceImpl(salida);
+    }
+}
+
+
+
+
+
+/*
+package com.utp.hexagonal.infraestructura.config;
+
 import com.utp.hexagonal.aplicacion.casodeuso.PersonaServiceImpl;
 import com.utp.hexagonal.aplicacion.service.PersonaService;
 import com.utp.hexagonal.dominio.puertos.salida.PersonaSalida;
@@ -27,3 +49,5 @@ public class AplicationConfig {
         return new PersonaJPARepositoryAdapter (personaJPARepository);
     }
 }
+
+ */
