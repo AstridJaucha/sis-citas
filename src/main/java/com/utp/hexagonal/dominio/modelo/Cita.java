@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Getter
@@ -16,6 +18,7 @@ public class Cita {
     private Long pacienteId; // Se puede usar paciente directamente si quieres luego
     private String especialidad;
     private String medico;
-    private Date fechaCita;
-    private String horaCita;
+    private LocalDate fechaCita;
+    private LocalTime horaCita;
+
 }

@@ -1,6 +1,7 @@
 package com.utp.hexagonal.infraestructura.entity;
 
 import com.utp.hexagonal.dominio.modelo.Paciente;
+import jakarta.validation.constraints.Size;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,7 @@ public class PacienteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(unique = true, nullable = false)
     private String dni;
     private String nombres;
     private String apellidos;

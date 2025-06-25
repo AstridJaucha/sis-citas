@@ -1,7 +1,7 @@
+/*
+
 package com.utp.hexagonal.aplicacion.service;
 
-import com.utp.hexagonal.dominio.modelo.Persona;
-import com.utp.hexagonal.dominio.puertos.entrada.PersonaEntrada;
 
 import java.util.Optional;
 
@@ -34,3 +34,5 @@ public class PersonaService implements PersonaEntrada {
         return personaEntrada.deletePersona(id);
     }
 }
+
+ */

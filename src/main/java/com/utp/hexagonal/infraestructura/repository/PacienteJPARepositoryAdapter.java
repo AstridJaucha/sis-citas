@@ -24,12 +24,12 @@ public class PacienteJPARepositoryAdapter implements PacienteSalida {
     }
 
     @Override
-    public Optional<Paciente> obtenerPorId(Long id) {
+    public Optional<Paciente> buscarPorId(Long id) {
         return repository.findById(id).map(PacienteEntity::alModelo);
     }
 
     @Override
-    public Optional<Paciente> obtenerPorDni(String dni) {
+    public Optional<Paciente> buscarPorDni(String dni) {
         return repository.findByDni(dni).map(PacienteEntity::alModelo);
     }
 

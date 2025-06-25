@@ -5,6 +5,7 @@ import com.utp.hexagonal.dominio.puertos.entrada.CitaEntrada;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,9 @@ public class CitaController {
     }
 
     @GetMapping("/fecha")
-    public ResponseEntity<List<Cita>> listarPorFecha(@RequestParam("fecha") Date fecha) {
+    public ResponseEntity<List<Cita>> listarPorFecha(
+            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fecha) {
         return ResponseEntity.ok(citaService.listarPorFecha(fecha));
     }
+
 }

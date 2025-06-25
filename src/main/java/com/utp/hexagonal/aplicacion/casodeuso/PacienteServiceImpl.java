@@ -19,17 +19,23 @@ public class PacienteServiceImpl implements PacienteEntrada {
 
     @Override
     public Paciente registrarPaciente(Paciente paciente) {
+        // Verifica si el DNI ya existe antes de guardar
+        Optional<Paciente> existente = pacienteSalida.buscarPorDni(paciente.getDni());
+        if (existente.isPresent()) {
+            throw new IllegalArgumentException("El DNI ya está registrado.");
+        }
         return pacienteSalida.guardarPaciente(paciente);
     }
 
+
     @Override
     public Optional<Paciente> buscarPorId(Long id) {
-        return pacienteSalida.obtenerPorId(id);
+        return pacienteSalida.buscarPorId(id);
     }
 
     @Override
     public Optional<Paciente> buscarPorDni(String dni) {
-        return pacienteSalida.obtenerPorDni(dni);
+        return pacienteSalida.buscarPorDni(dni);
     }
 
     @Override

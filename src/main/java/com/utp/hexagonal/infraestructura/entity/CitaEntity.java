@@ -4,6 +4,8 @@ import com.utp.hexagonal.dominio.modelo.Cita;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
@@ -22,8 +24,11 @@ public class CitaEntity {
 
     private String especialidad;
     private String medico;
-    private Date fechaCita;
-    private String horaCita;
+
+    private LocalDate fechaCita;
+    private LocalTime horaCita;
+
+
 
     public static CitaEntity delModelo(Cita cita) {
         return new CitaEntity(
