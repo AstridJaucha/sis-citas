@@ -27,9 +27,22 @@ public class CitaServiceImpl implements CitaEntrada {
         pacienteSalida.buscarPorId(cita.getPacienteId())
                 .orElseThrow(() -> new IllegalArgumentException("El paciente no existe"));
 
+        // Validar duplicidad de cita por especialidad, fecha y hora
+        boolean existe = citaSalida
+                .listarTodas()
+                .stream()
+                .anyMatch(c ->
+                        c.getEspecialidad().equalsIgnoreCase(cita.getEspecialidad()) &&
+                                c.getFechaCita().equals(cita.getFechaCita()) &&
+                                c.getHoraCita().equals(cita.getHoraCita())
+                );
+
+        if (existe) {
+            throw new IllegalArgumentException("Ya existe una cita registrada para esa especialidad en la misma fecha y hora.");
+        }
+
         return citaSalida.guardarCita(cita);
     }
-
 
     @Override
     public Optional<Cita> buscarPorId(Long id) {

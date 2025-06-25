@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -20,24 +19,37 @@ public class CitaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long pacienteId; // Relación simplificada
+    @ManyToOne
+    @JoinColumn(name = "paciente_id", nullable = false)
+    private PacienteEntity paciente;
 
-    private String especialidad;
+    @ManyToOne
+    @JoinColumn(name = "especialidad_id", nullable = false)
+    private EspecialidadEntity especialidad;
+
     private String medico;
-
     private LocalDate fechaCita;
     private LocalTime horaCita;
 
-
-
-    public static CitaEntity delModelo(Cita cita) {
+    public static CitaEntity delModelo(Cita cita, EspecialidadEntity especialidad, PacienteEntity paciente) {
         return new CitaEntity(
-                cita.getId(), cita.getPacienteId(), cita.getEspecialidad(),
-                cita.getMedico(), cita.getFechaCita(), cita.getHoraCita()
+                cita.getId(),
+                paciente,
+                especialidad,
+                cita.getMedico(),
+                cita.getFechaCita(),
+                cita.getHoraCita()
         );
     }
 
     public Cita alModelo() {
-        return new Cita(id, pacienteId, especialidad, medico, fechaCita, horaCita);
+        return new Cita(
+                id,
+                paciente.getId(),
+                especialidad.getNombre(),
+                medico,
+                fechaCita,
+                horaCita
+        );
     }
 }
