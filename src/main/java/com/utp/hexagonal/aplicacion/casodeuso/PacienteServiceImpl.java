@@ -25,28 +25,24 @@ public class PacienteServiceImpl implements PacienteEntrada {
 
     @Override
     public Paciente registrarPaciente(Paciente paciente) {
+        // Verificar si ya existe en la base de datos
         Optional<Paciente> existente = pacienteSalida.buscarPorDni(paciente.getDni());
         if (existente.isPresent()) {
-            throw new IllegalArgumentException("El DNI ya está registrado.");
+            // Ya existe, devolvemos el paciente encontrado
+            return existente.get();
         }
 
-        // Consultar API de RENIEC
+        // No existe: consultar API RENIEC
         ReniecResponseDTO dataReniec = reniecClient.consultarPorDni(paciente.getDni());
         if (dataReniec == null || dataReniec.getNombres() == null) {
             throw new IllegalArgumentException("No se pudo obtener información del DNI desde RENIEC.");
         }
 
-        // Rellenar datos del paciente
-        //paciente.setNombres(dataReniec.getNombres());
-       // paciente.setApellidos(dataReniec.getApellidoPaterno() + " " + dataReniec.getApellidoMaterno());
-       // paciente.setGenero(dataReniec.getSexo());
-
-        // Rellenar los datos del paciente
+        // Completar datos con los datos de RENIEC
         paciente.setNombres(dataReniec.getNombres());
-        paciente.setApellidos(dataReniec.getApellidos());
+        paciente.setApellidos(dataReniec.getApellidos()); // Ya combinaste apellidos
         paciente.setGenero(dataReniec.getSexo());
 
-        // Convertir fecha de nacimiento
         try {
             Date fecha = new SimpleDateFormat("yyyy-MM-dd").parse(dataReniec.getFechaNacimiento());
             paciente.setFechaNacimiento(fecha);
@@ -54,8 +50,10 @@ public class PacienteServiceImpl implements PacienteEntrada {
             throw new IllegalArgumentException("Error al convertir la fecha de nacimiento del RENIEC.");
         }
 
+        // Guardar y devolver
         return pacienteSalida.guardarPaciente(paciente);
     }
+
 
     @Override
     public Optional<Paciente> buscarPorId(Long id) {

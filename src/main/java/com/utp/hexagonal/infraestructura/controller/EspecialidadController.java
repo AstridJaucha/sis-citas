@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/especialidades")
-@CrossOrigin(origins = "*") // Opcional: permite acceso desde cualquier origen (útil para frontend en desarrollo)
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class EspecialidadController {
 
     private final EspecialidadJPARepository especialidadRepo;

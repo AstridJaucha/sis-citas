@@ -37,7 +37,7 @@ public class ReniecClient {
                 ReniecResponseDTO dto = new ReniecResponseDTO();
                 dto.setDni(data.get("number"));
                 dto.setNombres(data.get("name"));
-                dto.setApellidos(data.get("surname")); // 👈
+                dto.setApellidos(data.get("surname"));
                 dto.setFechaNacimiento(data.get("date_of_birth"));
                 dto.setSexo(data.get("sexo")); // Asegúrate que la API devuelve este campo
                 return dto;
