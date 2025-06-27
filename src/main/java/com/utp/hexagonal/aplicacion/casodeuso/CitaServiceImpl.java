@@ -6,9 +6,13 @@ import com.utp.hexagonal.dominio.puertos.salida.CitaSalida;
 import com.utp.hexagonal.dominio.puertos.salida.PacienteSalida;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 public class CitaServiceImpl implements CitaEntrada {
@@ -20,14 +24,21 @@ public class CitaServiceImpl implements CitaEntrada {
         this.citaSalida = citaSalida;
         this.pacienteSalida = pacienteSalida;
     }
-
     @Override
     public Cita registrarCita(Cita cita) {
-        // Validar que el paciente exista
         pacienteSalida.buscarPorId(cita.getPacienteId())
                 .orElseThrow(() -> new IllegalArgumentException("El paciente no existe"));
 
-        // Validar duplicidad de cita por especialidad, fecha y hora
+        // Validar que la fecha y hora de la cita sean futuras
+        LocalDateTime citaFechaHora = LocalDateTime.of(
+                cita.getFechaCita(),
+                cita.getHoraCita()
+        );
+        if (citaFechaHora.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("La cita debe programarse en una fecha y hora futura.");
+        }
+
+        // Validar duplicidad
         boolean existe = citaSalida
                 .listarTodas()
                 .stream()
@@ -43,6 +54,8 @@ public class CitaServiceImpl implements CitaEntrada {
 
         return citaSalida.guardarCita(cita);
     }
+
+
 
     @Override
     public Optional<Cita> buscarPorId(Long id) {
