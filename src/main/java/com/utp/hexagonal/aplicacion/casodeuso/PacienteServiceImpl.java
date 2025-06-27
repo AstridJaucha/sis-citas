@@ -1,8 +1,10 @@
 package com.utp.hexagonal.aplicacion.casodeuso;
 
 import com.utp.hexagonal.dominio.modelo.Paciente;
+import com.utp.hexagonal.dominio.modelo.Usuario;
 import com.utp.hexagonal.dominio.puertos.entrada.PacienteEntrada;
 import com.utp.hexagonal.dominio.puertos.salida.PacienteSalida;
+import com.utp.hexagonal.dominio.puertos.salida.UsuarioSalida;
 import com.utp.hexagonal.infraestructura.client.ReniecClient;
 import com.utp.hexagonal.infraestructura.dto.ReniecResponseDTO;
 import org.springframework.stereotype.Service;
@@ -12,35 +14,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+
 public class PacienteServiceImpl implements PacienteEntrada {
 
     private final PacienteSalida pacienteSalida;
     private final ReniecClient reniecClient;
+    private final UsuarioSalida usuarioSalida;
 
-    public PacienteServiceImpl(PacienteSalida pacienteSalida, ReniecClient reniecClient) {
+    public PacienteServiceImpl(PacienteSalida pacienteSalida, ReniecClient reniecClient, UsuarioSalida usuarioSalida) {
         this.pacienteSalida = pacienteSalida;
         this.reniecClient = reniecClient;
+        this.usuarioSalida = usuarioSalida;
     }
 
     @Override
     public Paciente registrarPaciente(Paciente paciente) {
-        // Verificar si ya existe en la base de datos
         Optional<Paciente> existente = pacienteSalida.buscarPorDni(paciente.getDni());
-        if (existente.isPresent()) {
-            // Ya existe, devolvemos el paciente encontrado
-            return existente.get();
-        }
+        if (existente.isPresent()) return existente.get();
 
-        // No existe: consultar API RENIEC
         ReniecResponseDTO dataReniec = reniecClient.consultarPorDni(paciente.getDni());
         if (dataReniec == null || dataReniec.getNombres() == null) {
             throw new IllegalArgumentException("No se pudo obtener información del DNI desde RENIEC.");
         }
 
-        // Completar datos con los datos de RENIEC
         paciente.setNombres(dataReniec.getNombres());
-        paciente.setApellidos(dataReniec.getApellidos()); // Ya combinaste apellidos
+        paciente.setApellidos(dataReniec.getApellidos());
         paciente.setGenero(dataReniec.getSexo());
 
         try {
@@ -50,10 +48,20 @@ public class PacienteServiceImpl implements PacienteEntrada {
             throw new IllegalArgumentException("Error al convertir la fecha de nacimiento del RENIEC.");
         }
 
-        // Guardar y devolver
-        return pacienteSalida.guardarPaciente(paciente);
-    }
+        Paciente guardado = pacienteSalida.guardarPaciente(paciente);
 
+        // Crear usuario asociado con rol PACIENTE
+        Usuario usuario = Usuario.builder()
+                .username(guardado.getDni())
+                .password(guardado.getDni())
+                .rol("PACIENTE")
+                .pacienteId(guardado.getId())
+                .build();
+
+        usuarioSalida.guardar(usuario);
+
+        return guardado;
+    }
 
     @Override
     public Optional<Paciente> buscarPorId(Long id) {

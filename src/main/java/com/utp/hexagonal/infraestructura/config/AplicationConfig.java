@@ -4,6 +4,7 @@ import com.utp.hexagonal.aplicacion.casodeuso.PacienteServiceImpl;
 import com.utp.hexagonal.dominio.puertos.entrada.PacienteEntrada;
 import com.utp.hexagonal.dominio.puertos.salida.EspecialidadSalida;
 import com.utp.hexagonal.dominio.puertos.salida.PacienteSalida;
+import com.utp.hexagonal.dominio.puertos.salida.UsuarioSalida;
 import com.utp.hexagonal.infraestructura.client.ReniecClient;
 import com.utp.hexagonal.infraestructura.repository.EspecialidadJPARepository;
 import com.utp.hexagonal.infraestructura.repository.EspecialidadJPARepositoryAdapter;
@@ -21,8 +22,12 @@ public class AplicationConfig {
     }
 
     @Bean
-    public PacienteEntrada pacienteEntrada(PacienteSalida salida, ReniecClient reniecClient) {
-        return new PacienteServiceImpl(salida, reniecClient);
+    public PacienteEntrada pacienteServiceImpl(
+            PacienteSalida pacienteSalida,
+            ReniecClient reniecClient,
+            UsuarioSalida usuarioSalida
+    ) {
+        return new PacienteServiceImpl(pacienteSalida, reniecClient, usuarioSalida);
     }
 
     @Bean

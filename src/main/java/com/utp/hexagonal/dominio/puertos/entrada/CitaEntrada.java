@@ -12,4 +12,6 @@ public interface CitaEntrada {
     List<Cita> listarCitas();
     List<Cita> listarPorEspecialidad(String especialidad);
     List<Cita> listarPorFecha(Date fecha);
+    List<Cita> listarPorPacienteId(Long pacienteId);
+
 }

@@ -6,15 +6,12 @@ import com.utp.hexagonal.dominio.puertos.salida.CitaSalida;
 import com.utp.hexagonal.dominio.puertos.salida.PacienteSalida;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
-@Service
+@Service("citaServiceImpl") // importante si usas @Qualifier en el controlador
 public class CitaServiceImpl implements CitaEntrada {
 
     private final CitaSalida citaSalida;
@@ -24,29 +21,25 @@ public class CitaServiceImpl implements CitaEntrada {
         this.citaSalida = citaSalida;
         this.pacienteSalida = pacienteSalida;
     }
+
     @Override
     public Cita registrarCita(Cita cita) {
+        // Validar existencia del paciente
         pacienteSalida.buscarPorId(cita.getPacienteId())
                 .orElseThrow(() -> new IllegalArgumentException("El paciente no existe"));
 
-        // Validar que la fecha y hora de la cita sean futuras
-        LocalDateTime citaFechaHora = LocalDateTime.of(
-                cita.getFechaCita(),
-                cita.getHoraCita()
-        );
+        // Validar que la cita esté en una fecha/hora futura
+        LocalDateTime citaFechaHora = LocalDateTime.of(cita.getFechaCita(), cita.getHoraCita());
         if (citaFechaHora.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("La cita debe programarse en una fecha y hora futura.");
         }
 
-        // Validar duplicidad
-        boolean existe = citaSalida
-                .listarTodas()
-                .stream()
-                .anyMatch(c ->
-                        c.getEspecialidad().equalsIgnoreCase(cita.getEspecialidad()) &&
-                                c.getFechaCita().equals(cita.getFechaCita()) &&
-                                c.getHoraCita().equals(cita.getHoraCita())
-                );
+        // Validar duplicidad: misma especialidad, fecha y hora
+        boolean existe = citaSalida.listarTodas().stream().anyMatch(c ->
+                c.getEspecialidad().equalsIgnoreCase(cita.getEspecialidad()) &&
+                        c.getFechaCita().equals(cita.getFechaCita()) &&
+                        c.getHoraCita().equals(cita.getHoraCita())
+        );
 
         if (existe) {
             throw new IllegalArgumentException("Ya existe una cita registrada para esa especialidad en la misma fecha y hora.");
@@ -54,8 +47,6 @@ public class CitaServiceImpl implements CitaEntrada {
 
         return citaSalida.guardarCita(cita);
     }
-
-
 
     @Override
     public Optional<Cita> buscarPorId(Long id) {
@@ -75,5 +66,10 @@ public class CitaServiceImpl implements CitaEntrada {
     @Override
     public List<Cita> listarPorFecha(Date fecha) {
         return citaSalida.listarPorFecha(fecha);
+    }
+
+    @Override
+    public List<Cita> listarPorPacienteId(Long pacienteId) {
+        return citaSalida.listarPorPacienteId(pacienteId);
     }
 }

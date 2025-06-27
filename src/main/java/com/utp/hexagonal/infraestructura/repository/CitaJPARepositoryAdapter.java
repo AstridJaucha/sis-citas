@@ -68,4 +68,11 @@ public class CitaJPARepositoryAdapter implements CitaSalida {
                 .map(CitaEntity::alModelo)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Cita> listarPorPacienteId(Long pacienteId) {
+        return citaJPARepository.findByPacienteId(pacienteId).stream()
+                .map(CitaEntity::alModelo)
+                .collect(Collectors.toList());
+    }
 }
